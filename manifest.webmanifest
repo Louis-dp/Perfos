@@ -3,8 +3,8 @@
  "short_name": "Grizzlys",
  "start_url": "./",
  "display": "standalone",
- "background_color": "#0f1a24",
- "theme_color": "#0f1a24",
+ "background_color": "#0a121a",
+ "theme_color": "#0a121a",
  "icons": [
   {
    "src": "icon-192.png",
