@@ -54,6 +54,10 @@ html.standalone header{padding-top:calc(max(env(safe-area-inset-top), 24px) + 14
 .acf input:focus,.acf input.kp-on{border-color:var(--accent)}
 .acf em{font-style:normal;font-size:12px;color:var(--bar-muted)}
 .acf.miss input{border-color:var(--ko)}
+#appcard .f label{font-size:13.5px}
+#appcard .box{min-height:58px}
+#appcard .box input{font-size:24px}
+#appcard .box.miss{border-color:var(--ko)}
 .ac select{appearance:none;-webkit-appearance:none;background:transparent;border:0;color:var(--bar-ink);font-weight:700;font-size:16px;padding:8px 26px 8px 4px;min-width:120px;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 13px) 55%,calc(100% - 8px) 55%;background-size:5px 5px;background-repeat:no-repeat}
 .ac select option{color:#000}
 .ac button{appearance:none;border:0;background:rgba(255,255,255,.12);color:var(--bar-ink);border-radius:9px;padding:8px 12px;font-weight:600;font-size:14px;cursor:pointer}
@@ -255,10 +259,6 @@ body{isolation:isolate}
 <header>
   <div class="bar">
     <div class="brand"><b>Grizzlys</b><span>AS332M1e / AS532 UL</span></div>
-    <div class="ac">
-      <div class="acf"><label for="mv">Masse à vide</label><input id="mv" inputmode="decimal" placeholder="—" aria-label="Masse à vide"><em>kg</em></div>
-      <div class="acf"><label for="cgv">Centrage à vide</label><input id="cgv" inputmode="decimal" placeholder="—" aria-label="Centrage à vide"><em>m</em></div>
-    </div>
     <div class="tabs" role="tablist">
       <button role="tab" data-tab="n" aria-selected="true">Performances</button>
       <button role="tab" data-tab="p" aria-selected="false">Entraînement pannes</button>
@@ -269,6 +269,14 @@ body{isolation:isolate}
 
 <main>
   <aside>
+    <section class="card" id="appcard">
+      <h2>Appareil</h2>
+      <div class="grid2 big2">
+        <div class="f"><label for="mv">Masse à vide</label><div class="box"><input id="mv" inputmode="decimal" placeholder="—"><em>kg</em></div></div>
+        <div class="f"><label for="cgv">Centrage à vide</label><div class="box"><input id="cgv" inputmode="decimal" placeholder="—"><em>m</em></div></div>
+      </div>
+    </section>
+
     <section class="card">
       <h2 id="condTitle">Conditions</h2>
       <div class="grid2">
@@ -1600,9 +1608,9 @@ const catalog=()=>{const m=new Map();EQUIP_BASE.forEach(e=>m.set(e.nom,e));st.eq
 const catItem=nom=>catalog().find(e=>e.nom===nom);
 function renderVide(){
   const mv=num(st.mv),cg=num(st.cg),ok=mv>0&&cg>0;
-  $('#mv').closest('.acf').classList.toggle('miss',!(mv>0));$('#cgv').closest('.acf').classList.toggle('miss',!(cg>0));
-  $('#vide').innerHTML=ok?`<div class="vide"><div class="nm">Masse à vide<small>saisie en haut de l’écran</small></div><b class="num">${fr(mv)}<small>kg</small></b><div class="nm"><small>Centrage à vide</small></div><b class="num" style="font-size:15px">${fr(cg,3)}<small>m</small></b></div>`
-   :`<div class="noac"><span>Saisir la masse et le centrage à vide en haut de l’écran</span></div>`;
+  $('#mv').closest('.box').classList.toggle('miss',!(mv>0));$('#cgv').closest('.box').classList.toggle('miss',!(cg>0));
+  $('#vide').innerHTML=ok?`<div class="vide"><div class="nm">Masse à vide<small>saisie dans la carte Appareil</small></div><b class="num">${fr(mv)}<small>kg</small></b><div class="nm"><small>Centrage à vide</small></div><b class="num" style="font-size:15px">${fr(cg,3)}<small>m</small></b></div>`
+   :`<div class="noac"><span>Saisir la masse et le centrage à vide dans la carte Appareil</span></div>`;
 }
 function lineRow(l,a){
   const t=CG.TYPES[l.type]||CG.TYPES.libre;let nm,arm;
@@ -1768,7 +1776,7 @@ function calc(){
 
   const PEN=Options.penalites(st.opts);
   const miss=[];
-  if(!(num(ac.mv)>0))miss.push('masse à vide (en haut)');if(!(num(ac.cg)>0))miss.push('centrage à vide (en haut)');
+  if(!(num(ac.mv)>0))miss.push('masse à vide (carte Appareil)');if(!(num(ac.cg)>0))miss.push('centrage à vide (carte Appareil)');
   if(!isFinite(qnh))miss.push('QNH');if(!isFinite(alt))miss.push('altitude terrain');if(!isFinite(T))miss.push('température');
   const ready=miss.length===0&&M>0;
   const R=$('#results');
