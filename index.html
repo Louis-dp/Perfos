@@ -65,11 +65,22 @@ html.standalone header{padding-top:calc(max(env(safe-area-inset-top), 24px) + 34
 .tabs button{appearance:none;border:0;background:transparent;color:var(--bar-muted);font-weight:650;font-size:15px;padding:10px 18px;border-radius:9px;cursor:pointer;min-height:42px}
 .tabs button[aria-selected="true"]{background:var(--bar-ink);color:var(--bar)}
 @media (max-width:1000px){header .tabs{flex:1 1 100%;margin-left:0}header .tabs button{flex:1}}
+/* iPhone : barre non collante et compacte (elle prenait un quart de l'écran), sans la marge ajoutée pour l'iPad */
+@media (max-width:600px){
+  header{position:static;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px}
+  html.standalone header{padding-top:calc(env(safe-area-inset-top) + 8px)}
+  .bar{gap:8px}
+  .brand b{font-size:17px}
+  .tabs button{font-size:13px;padding:7px 4px;min-height:40px;line-height:1.15}
+}
+/* champs texte en 16 px sur écran tactile : en dessous, Safari iPhone zoome toute la page à la saisie */
+@media (pointer:coarse){.ld .nm input{font-size:16px}}
 
 /* ---------- grille ---------- */
 main{max-width:1240px;margin:0 auto;padding:16px 16px calc(24px + env(safe-area-inset-bottom));display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px;align-items:start}
 @media (max-width:1060px){main{grid-template-columns:340px minmax(0,1fr)}.ld{grid-template-columns:minmax(0,1fr) 92px 64px 22px;gap:6px}.ld .box input{font-size:16px}}
 @media (max-width:780px){main{grid-template-columns:1fr}}
+@media (max-width:600px){main{padding:12px 12px calc(20px + env(safe-area-inset-bottom));gap:12px}.ld{grid-template-columns:minmax(0,1fr) 96px 62px 22px}}
 .card{background:var(--card,var(--surface));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
 .card>h2{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:700}
 .card>h2 .act{font-size:13px;letter-spacing:0;text-transform:none}
@@ -198,7 +209,7 @@ dialog::backdrop{background:rgba(5,12,20,.55)}
 .tile.na .tv{color:var(--muted)}
 .grp{margin-top:10px}
 .gh{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 0 4px;border-top:1px solid var(--line)}
-.addbtn{appearance:none;border:0;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px;letter-spacing:0;text-transform:none;border-radius:999px;padding:7px 12px;cursor:pointer}
+.addbtn{white-space:nowrap;appearance:none;border:0;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px;letter-spacing:0;text-transform:none;border-radius:999px;padding:7px 12px;cursor:pointer}
 .none{font-size:13px;color:var(--muted);padding:4px 0 8px}
 .it{display:grid;grid-template-columns:minmax(0,1fr) auto 76px 24px;gap:8px;align-items:center;padding:8px 0;border-top:1px dashed var(--line)}
 .it:first-child{border-top:0}
@@ -219,7 +230,7 @@ dialog::backdrop{background:rgba(5,12,20,.55)}
 .ct i{position:absolute;top:8px;right:8px;font-style:normal;font-size:12px;font-weight:800;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:2px 7px}
 .ct.on{border-color:var(--accent);background:var(--accent-soft)}
 .ghostc{border-style:dashed;color:var(--muted);cursor:default}
-#equip{width:min(900px,calc(100vw - 16px))}
+.opt.sm{margin-top:8px;padding:9px 12px}
 #kp{position:fixed;left:0;right:0;bottom:0;z-index:1000;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -8px 30px rgba(0,0,0,.45);padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:none}
 #kp.on{display:block}
 #kp .kh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;max-width:560px;margin:0 auto 8px;font-size:13px;color:var(--muted)}
@@ -261,9 +272,9 @@ body{isolation:isolate}
   <div class="bar">
     <div class="brand"><b>Grizzlys</b><span>AS332M1e / AS532 UL</span></div>
     <div class="tabs" role="tablist">
-      <button role="tab" data-tab="n" aria-selected="true">Performances</button>
-      <button role="tab" data-tab="p" aria-selected="false">Entraînement pannes</button>
-      <button role="tab" data-tab="m" aria-selected="false">Mission</button>
+      <button role="tab" data-tab="n" aria-selected="true">Performances normales</button>
+      <button role="tab" data-tab="p" aria-selected="false">Performances pannes</button>
+      <button role="tab" data-tab="m" aria-selected="false">Simulation</button>
     </div>
   </div>
 </header>
@@ -294,8 +305,7 @@ body{isolation:isolate}
       <h2>Chargement &amp; centrage</h2>
       <div id="vide"></div>
       <div class="grp"><div class="gh"><span>Équipage et carburant</span></div><div id="lines-crew"></div></div>
-      <div class="grp"><div class="gh"><span>Équipements embarqués</span><button class="addbtn" type="button" id="openEquip">+ Équipements</button></div><div id="items"></div></div>
-      <div class="grp"><div class="gh"><span>Fret et passagers</span><button class="addbtn" type="button" id="openFret">+ Ajouter</button></div><div id="lines-fret"></div></div>
+      <div class="grp"><div class="gh"><span>Équipements, fret et passagers</span><button class="addbtn" type="button" id="addLibre">+ Ajouter</button></div><div id="lines-fret"></div><div id="ext-perf"></div></div>
       <div class="tot">
         <span class="k">Masse totale</span><span class="v" id="o-m">—</span>
         <span class="k">Centrage</span><span class="v2" id="o-x">—</span>
@@ -324,9 +334,9 @@ body{isolation:isolate}
       <div class="f"><label for="m-alt">Altitude</label><div class="box"><input id="m-alt" inputmode="decimal" placeholder="0"><em>ft</em></div></div>
       <div class="f"><label for="m-temp">Température θs</label><div class="box"><input id="m-temp" inputmode="decimal" placeholder="15"><em>°C</em></div></div>
       <div class="f"><label for="m-qnh">QNH</label><div class="box"><input id="m-qnh" inputmode="decimal" placeholder="départ"><em>hPa</em></div></div>
-      <div class="f"><label for="m-bras">Bras de la charge</label><div class="box"><input id="m-bras" inputmode="decimal" placeholder="4.70"><em>m</em></div></div>
+      <div class="f" id="m-bras-f"><label for="m-bras">Bras de la charge</label><div class="box"><input id="m-bras" inputmode="decimal" placeholder="4.70"><em>m</em></div></div>
     </div>
-    <div class="ac-opts" id="m-chips" style="margin:10px 0 0"></div>
+    <div id="m-ext"></div>
   </section>
   <section id="results"></section>
   </div>
@@ -334,19 +344,6 @@ body{isolation:isolate}
 
 
 
-<dialog id="equip">
-  <div class="dh"><h3>Équipements embarqués</h3><button class="btn pri" id="closeequip" type="button">Terminé</button></div>
-  <div class="db">
-    <div class="box" style="margin-bottom:10px"><input id="eqsearch" class="tx" placeholder="Rechercher (M3M, blindage, treuil…)" style="text-align:left;font-size:16px;font-weight:500"></div>
-    <div class="ac-opts" id="eqcats" style="margin:0 0 12px"></div>
-    <div class="ctgrid" id="eqgrid"></div>
-    <p class="chartcap" style="font-size:12.5px;color:var(--muted);margin-top:12px">Masses et bras de levier du PMV (section 6.2, équipements pouvant être déposés). « Déposé » retire l’équipement s’il est compris dans la masse à vide. Lots de bord et kits de l’escadrille : fichier equipements.csv sur GitHub.</p>
-  </div>
-</dialog>
-<dialog id="fret">
-  <div class="dh"><h3>Fret et passagers</h3><button class="btn" id="closefret" type="button">Annuler</button></div>
-  <div class="db"><div class="ctgrid" id="fretgrid"></div></div>
-</dialog>
 
 <div id="kp" role="group" aria-label="Pavé numérique"><div class="kh"><span id="kpl"></span><b id="kpv"></b></div><div class="kg">
   <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" class="fn" data-k="del" aria-label="Effacer">⌫</button>
@@ -1331,11 +1328,12 @@ if (typeof module !== 'undefined') module.exports.DATA = CATA_DEC;
       det.push({ nom: l.nom || t.nom, kg, bras: mom / kg, mom });
     });
     // Charge externe (SUP.15) : le domaine 2.2 fig 1 s'arrête à 9000 kg, masse de l'appareil hors charge.
-    // On vérifie l'appareil sans la charge dans le domaine, et l'ensemble (≤ 9350 kg) entre 4,55 et 4,90 m.
+    // On vérifie l'appareil sans la charge dans le domaine, et l'ensemble (≤ 9350 kg) dans le domaine,
+    // prolongé au-delà de 9000 kg par les limites à 9000 kg (4,55 à 4,90 m).
     const okAvec = (Mt, mom) => {
       const xt = Mt ? mom / Mt : NaN;
       if (!(Me > 0)) return dansDomaine(Mt, xt);
-      const Ma = Mt - Me, xa = Ma ? (mom - Mex) / Ma : NaN, l = limites(9000);
+      const Ma = Mt - Me, xa = Ma ? (mom - Mex) / Ma : NaN, l = limites(Math.min(Mt, 9000));
       return dansDomaine(Ma, xa) && Mt <= 9350 && xt >= l.av - 1e-9 && xt <= l.ar + 1e-9;
     };
     const x = M ? Mx / M : NaN;
@@ -1352,73 +1350,8 @@ if (typeof module !== 'undefined') module.exports.DATA = CATA_DEC;
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.CG = api;
 })(this);
 </script>
-<script>// Catalogue d'équipements : masses et moments longitudinaux du PMV 332M1, section 6.2 §3.3 et §4.3
-// (« équipements pouvant être déposés »). kg et moment en m.kg ; bras = moment / masse.
-// Les lots de bord et kits de l'escadrille s'ajoutent par le fichier equipements.csv publié sur GitHub.
-var EQUIP_BASE = [
-  // ---- Armement : M3M
-  ['Armement', 'M3M droite sortie – support + kits', 63.5, 298.51],
-  ['Armement', 'M3M droite sortie – mitrailleuse', 38.88, 182],
-  ['Armement', 'M3M droite sortie – 300 munitions', 39, 182.44],
-  ['Armement', 'M3M droite rentrée – support + kits', 63.5, 357.44],
-  ['Armement', 'M3M droite rentrée – mitrailleuse', 38.88, 210.22],
-  ['Armement', 'M3M droite rentrée – 300 munitions', 39, 225.23],
-  ['Armement', 'M3M gauche sortie – support + kits', 63.5, 285.18],
-  ['Armement', 'M3M gauche sortie – mitrailleuse', 38.88, 175.39],
-  ['Armement', 'M3M gauche sortie – 300 munitions', 39, 176.05],
-  ['Armement', 'M3M gauche rentrée – support + kits', 63.5, 226.25],
-  ['Armement', 'M3M gauche rentrée – mitrailleuse', 38.88, 147.16],
-  ['Armement', 'M3M gauche rentrée – 300 munitions', 39, 133.26],
-  ['Armement', 'Caisse munitions M3M pleine – plaque principale droite', 46.8, 272.33],
-  ['Armement', 'Caisse munitions M3M pleine – plaque principale gauche', 46.8, 157.86],
-  ['Armement', 'Caisse munitions M3M pleine – plaque additionnelle', 46.8, 270.64],
-  ['Armement', 'Guide évacuation des douilles droit', 3.4, 15.89],
-  ['Armement', 'Guide évacuation des douilles gauche', 3.4, 15.22],
-  // ---- Armement : MAG58M et FM MAG 58
-  ['Armement', 'MAG58M droite sortie – installation complète', 32.7, 150.58],
-  ['Armement', 'MAG58M droite sortie – 250 munitions', 7.2, 33.08],
-  ['Armement', 'MAG58M droite rentrée – installation complète', 32.7, 184.17],
-  ['Armement', 'MAG58M droite rentrée – 250 munitions', 7.2, 40.62],
-  ['Armement', 'MAG58M gauche sortie – installation complète', 32.7, 149.96],
-  ['Armement', 'MAG58M gauche sortie – 250 munitions', 7.2, 33.09],
-  ['Armement', 'MAG58M gauche rentrée – installation complète', 32.7, 116.38],
-  ['Armement', 'MAG58M gauche rentrée – 250 munitions', 7.2, 25.56],
-  ['Armement', 'FM MAG 58 socle court – porte gauche + 230 cps', 41.5, 178.8],
-  ['Armement', 'FM MAG 58 socle court – porte droite + 230 cps', 41.5, 200.9],
-  ['Armement', 'FM MAG 58 socle long – porte gauche + 230 cps', 42, 203.3],
-  ['Armement', 'FM MAG 58 socle long – porte droite + 230 cps', 42, 183.1],
-  ['Armement', 'Plaque d\'interface M3M/MAG58 droite – sortie', 83.55, 430.87],
-  ['Armement', 'Plaque d\'interface M3M/MAG58 droite – rentrée', 83.55, 443.73],
-  ['Armement', 'Plaque d\'interface M3M/MAG58 gauche – sortie', 83.55, 340.38],
-  ['Armement', 'Plaque d\'interface M3M/MAG58 gauche – rentrée', 83.55, 324.26],
-  ['Armement', 'Plaque additionnelle équipée', 17.43, 101.06],
-  // ---- Armement : canon SH 20
-  ['Armement', 'Canon SH 20 complet – position stockée', 401.8, 2338.48],
-  ['Armement', 'Canon SH 20 complet – position de tir', 401.8, 2318.39],
-  // ---- Blindages
-  ['Blindages', 'Plancher cockpit pilote + copilote', 24.9, 22.1],
-  ['Blindages', 'Plancher cockpit 3e homme', 18.9, 36.5],
-  ['Blindages', 'Plancher tireur sabord droit', 22.2, 106.7],
-  ['Blindages', 'Plancher tireur sabord gauche', 22.2, 96.4],
-  ['Blindages', 'Vertical tireur sabord droit', 12.1, 59.2],
-  ['Blindages', 'Vertical tireur sabord gauche', 12.1, 51.5],
-  ['Blindages', 'Couverture blindée plancher (8)', 232, 1119.86],
-  ['Blindages', 'Sièges et portes pilote / copilote', 70.42, 103.51],
-  // ---- Kits et équipements
-  ['Kits', 'Treuil hydraulique vitesse variable (potence fixe)', 43.1, 177.7],
-  ['Kits', 'Installation élingue 3 000 kg', 22.5, 86.2],
-  ['Kits', 'Tuyères DDJ', 101.64, 517.35],
-  ['Kits', 'Tuyères TRDDJ', 30, 145.32],
-  ['Kits', 'Flottabilité de secours (parties mobiles)', 149.4, 728.2],
-  ['Kits', 'Skis (partie mobile)', 144.83, 666.70],
-  ['Kits', 'Skis (partie fixe)', 7.77, 48.34],
-  ['Kits', 'Réservoirs de convoyage – 2 avant (vides)', 65, 246],
-  ['Kits', 'Réservoirs de convoyage – 2 arrière (vides)', 65, 374],
-  ['Kits', 'Réservoir de convoyage transversal arrière (vide)', 36, 244],
-].map(([cat, nom, kg, mom]) => ({ cat, nom, kg, bras: Math.round(mom / kg * 1000) / 1000, src: 'PMV 6.2' }));
-</script>
-<script>// Abaques du PMV 332M1 (édition du 17/07/2025, raster 200 dpi recadré, fichiers abaques/*.jpg), coordonnées = pixels page à 150 dpi
-var CHART_IMG={"h5":{"src":"abaques/h5.jpg","ox":170,"oy":655,"w":830,"h":655},"f7":{"src":"abaques/f7.jpg","ox":110,"oy":110,"w":970,"h":1350},"f8":{"src":"abaques/f8.jpg","ox":150,"oy":115,"w":1000,"h":1345},"f9":{"src":"abaques/f9.jpg","ox":100,"oy":115,"w":1000,"h":1345},"s2":{"src":"abaques/s2.jpg","ox":100,"oy":120,"w":1050,"h":1170},"s3":{"src":"abaques/s3.jpg","ox":100,"oy":120,"w":1000,"h":1190},"s4":{"src":"abaques/s4.jpg","ox":150,"oy":120,"w":1000,"h":1200},"s6":{"src":"abaques/s6.jpg","ox":150,"oy":140,"w":1000,"h":1150},"s8a":{"src":"abaques/s8a.jpg","ox":100,"oy":170,"w":1000,"h":1130},"s8b":{"src":"abaques/s8b.jpg","ox":150,"oy":120,"w":1000,"h":1210},"s9":{"src":"abaques/s9.jpg","ox":100,"oy":140,"w":1000,"h":1190},"c1":{"src":"abaques/c1.jpg","ox":100,"oy":280,"w":1000,"h":960},"c2":{"src":"abaques/c2.jpg","ox":160,"oy":270,"w":980,"h":930},"s7":{"src":"abaques/s7.jpg","ox":100,"oy":150,"w":1000,"h":1140},"k1":{"src":"abaques/k1.jpg","ox":150,"oy":170,"w":1000,"h":1130},"k2":{"src":"abaques/k2.jpg","ox":150,"oy":120,"w":1000,"h":1210},"k3":{"src":"abaques/k3.jpg","ox":150,"oy":140,"w":1000,"h":1190},"o10":{"src":"abaques/o10.jpg","ox":130,"oy":120,"w":1020,"h":1200},"o11":{"src":"abaques/o11.jpg","ox":77,"oy":120,"w":1020,"h":1200},"o12":{"src":"abaques/o12.jpg","ox":130,"oy":120,"w":1020,"h":1200},"v16":{"src":"abaques/v16.jpg","ox":150,"oy":115,"w":1000,"h":1400},"s15":{"src":"abaques/s15.jpg","ox":150,"oy":115,"w":1000,"h":1400}};
+<script>// Abaques du PMV 332M1 (édition du 17/07/2025, raster 200 dpi recadré sur le cadre complet de la figure (cartouche compris), fichiers abaques/*.jpg), coordonnées = pixels page à 150 dpi
+var CHART_IMG={"h5":{"src":"abaques/h5.jpg","ox":91,"oy":655,"w":1011,"h":879},"f7":{"src":"abaques/f7.jpg","ox":110,"oy":110,"w":970,"h":1419},"f8":{"src":"abaques/f8.jpg","ox":150,"oy":115,"w":1000,"h":1404},"f9":{"src":"abaques/f9.jpg","ox":99,"oy":115,"w":1001,"h":1404},"s2":{"src":"abaques/s2.jpg","ox":100,"oy":116,"w":1050,"h":1403},"s3":{"src":"abaques/s3.jpg","ox":99,"oy":116,"w":1001,"h":1403},"s4":{"src":"abaques/s4.jpg","ox":150,"oy":116,"w":1000,"h":1403},"s6":{"src":"abaques/s6.jpg","ox":150,"oy":116,"w":1000,"h":1402},"s8a":{"src":"abaques/s8a.jpg","ox":99,"oy":116,"w":1001,"h":1403},"s8b":{"src":"abaques/s8b.jpg","ox":150,"oy":116,"w":1000,"h":1403},"s9":{"src":"abaques/s9.jpg","ox":99,"oy":116,"w":1001,"h":1403},"c1":{"src":"abaques/c1.jpg","ox":99,"oy":116,"w":1001,"h":1403},"c2":{"src":"abaques/c2.jpg","ox":160,"oy":115,"w":980,"h":1360},"s7":{"src":"abaques/s7.jpg","ox":99,"oy":116,"w":1001,"h":1403},"k1":{"src":"abaques/k1.jpg","ox":150,"oy":116,"w":1026,"h":1403},"k2":{"src":"abaques/k2.jpg","ox":99,"oy":116,"w":1051,"h":1401},"k3":{"src":"abaques/k3.jpg","ox":150,"oy":116,"w":1026,"h":1403},"o10":{"src":"abaques/o10.jpg","ox":130,"oy":116,"w":1020,"h":1403},"o11":{"src":"abaques/o11.jpg","ox":77,"oy":116,"w":1020,"h":1403},"o12":{"src":"abaques/o12.jpg","ox":130,"oy":116,"w":1020,"h":1403},"v16":{"src":"abaques/v16.jpg","ox":150,"oy":115,"w":1000,"h":1402},"s15":{"src":"abaques/s15.jpg","ox":150,"oy":115,"w":1000,"h":1404}};
 </script>
 <script>// Tracé du cheminement calculé sur les abaques du PMV.
 // Coordonnées en pixels de la page rendue à 150 dpi ; calage par lignes de grille et graduations.
@@ -1659,11 +1592,15 @@ if(st.conso===undefined||st.conso==='')st.conso=(st.mis&&st.mis.conso)||'500';
 if(st.vent===undefined||st.vent==='')st.vent='0';
 ['qnh','alt','temp','vent','conso'].forEach(id=>{const el=$('#'+id);el.value=st[id];el.addEventListener('input',()=>{st[id]=el.value;save();calc()})});
 st.mis=Object.assign({dist:'',gs:'',conso:'',res:'',alt:'',temp:'',qnh:'',bras:''},st.mis||{});
-['dist','gs','res','alt','temp','qnh','bras'].forEach(k=>{const el=$('#m-'+k);el.value=st.mis[k];el.addEventListener('input',()=>{st.mis[k]=el.value;save();renderChips();calc()})});
-const MCHIPS=[['Palette avant','3.89'],['Cabine / palette centrale','4.70'],['Palette arrière','5.69'],['Charge au treuil','4.23'],['Charge à l’élingue','4.86']];
-function renderChips(){const b=num(st.mis.bras);$('#m-chips').innerHTML=MCHIPS.map(([n,v])=>`<button type="button" class="tg" data-b="${v}" aria-pressed="${Math.abs(b-Number(v))<1e-6}">${n} · ${v.replace('.',',')} m</button>`).join('');
-  $('#m-chips').querySelectorAll('[data-b]').forEach(x=>x.addEventListener('click',()=>{st.mis.bras=x.dataset.b;$('#m-bras').value=x.dataset.b;save();renderChips();calc()}))}
-renderChips();
+['dist','gs','res','alt','temp','qnh','bras'].forEach(k=>{const el=$('#m-'+k);el.value=st.mis[k];el.addEventListener('input',()=>{st.mis[k]=el.value;save();calc()})});
+// charge utile à l'élingue (SUP.15) : case à cocher ; reprise de l'ancien choix « bras 4,86 m »
+if(st.mis.elingue===undefined){st.mis.elingue=Math.abs(num(st.mis.bras)-4.86)<1e-6;if(st.mis.elingue)st.mis.bras=''}
+const caseOpt=(on,titre,sup,effet)=>`<label class="opt sm${on?' on':''}"><input type="checkbox" ${on?'checked':''}><span class="ck">${CHECK}</span><div><div class="t">${titre}<span>${sup}</span></div><div class="e">${effet}</div></div></label>`;
+function renderMisExt(){const on=!!st.mis.elingue;
+  $('#m-ext').innerHTML=caseOpt(on,'Charge à l’élingue','SUP.15','Charge utile au crochet, bras 4,86 m · HES avec charge externe (fig 2), 9350 kg maxi · charge ≤ 3000 kg');
+  $('#m-bras-f').style.visibility=on?'hidden':'';
+  $('#m-ext input').addEventListener('change',e=>{st.mis.elingue=e.target.checked;save();renderMisExt();calc()})}
+renderMisExt();
 
 // ---------------- pavé numérique (tablette) ----------------
 // Sur écran tactile : les champs numériques n'ouvrent pas le clavier iPad mais ce pavé ;
@@ -1724,21 +1661,22 @@ const CREW=['equip','carb'];
   if(old.length){const kg=old.reduce((s,l)=>s+(num(l.kg)||0),0);st.lines=st.lines.filter(l=>l.type!=='pil'&&l.type!=='meca');st.lines.unshift({id:uid(),type:'equip',kg:kg?String(kg):''})}
 }
 const FRET=[['libre','Passagers','bras libre',{nom:'Passagers',bras:'4.70'}],['palav','Palette avant','3,89 m'],['palc','Palette centrale','4,70 m'],['palar','Palette arrière','5,69 m'],['treuil','Charge au treuil','4,23 m'],['elingue','Charge à l’élingue','4,86 m · SUP.15'],['carbsoute','Carburant réservoir de soute','3,58 m'],['libre','Autre','bras libre',{nom:'Autre',bras:'4.70'}]];
+// Ajouts libres seulement : les équipements du catalogue et le fret à bras fixe deviennent des lignes libres (libellé, masse, bras)
 st.items=(st.items||[]).filter(it=>!['Treuil hydraulique vitesse constante (potence fixe)','Flir (parties mobiles)','Échelle d\'accès','Siège 3e homme coulissant / pivotant','Strapontin 3e homme'].includes(it.nom)); // compris dans la masse à vide ou non détenus
-st.equipRemote=st.equipRemote||[];
+st.items.forEach(it=>{const kg=(it.sign||1)*(Number(it.kg)||0)*(it.qty||1);st.lines.push({id:uid(),type:'libre',nom:it.nom+(it.qty>1?' ×'+it.qty:''),kg:String(Math.round(kg*10)/10),bras:String(it.bras)})});
+st.items=[];delete st.equipRemote;
+st.lines.forEach(l=>{if(['palav','palc','palar','treuil'].includes(l.type)){const t=CG.TYPES[l.type];l.nom=t.nom;l.bras=String(t.bras);l.type='libre'}});
 CREW.forEach((t,i)=>{if(!st.lines.some(l=>l.type===t))st.lines.splice(i,0,{id:uid(),type:t,kg:''})});
 {const ext=st.lines.filter(l=>l.type==='carbext');if(ext.length){const c=st.lines.find(l=>l.type==='carb');const add=ext.reduce((s,l)=>s+(num(l.kg)||0),0);if(add)c.kg=String((num(c.kg)||0)+add);st.lines=st.lines.filter(l=>l.type!=='carbext')}}
-const catalog=()=>{const m=new Map();EQUIP_BASE.forEach(e=>m.set(e.nom,e));st.equipRemote.forEach(e=>m.set(e.nom,e));return [...m.values()]};
-const catItem=nom=>catalog().find(e=>e.nom===nom);
 function renderVide(){
   const mv=num(st.mv),cg=num(st.cg),ok=mv>0&&cg>0;
   $('#mv').closest('.box').classList.toggle('miss',!(mv>0));$('#cgv').closest('.box').classList.toggle('miss',!(cg>0));
-  $('#vide').innerHTML=ok?`<div class="vide"><div class="nm">Masse à vide<small>saisie dans la carte Appareil</small></div><b class="num">${fr(mv)}<small>kg</small></b><div class="nm"><small>Centrage à vide</small></div><b class="num" style="font-size:15px">${fr(cg,3)}<small>m</small></b></div>`
+  $('#vide').innerHTML=ok?`<div class="vide"><div class="nm">Masse à vide</div><b class="num">${fr(mv)}<small>kg</small></b><div class="nm">Centrage à vide</div><b class="num">${fr(cg,3)}<small>m</small></b></div>`
    :`<div class="noac"><span>Saisir la masse et le centrage à vide dans la carte Appareil</span></div>`;
 }
 function lineRow(l,a){
   const t=CG.TYPES[l.type]||CG.TYPES.libre;let nm,arm;
-  if(t.libre){nm=`<div class="nm"><input data-f="nom" value="${esc(l.nom)}" aria-label="Libellé"></div>`;arm=`<div class="box"><input data-f="bras" inputmode="decimal" value="${esc(l.bras)}" aria-label="Bras de levier"><em>m</em></div>`}
+  if(t.libre){nm=`<div class="nm"><input data-f="nom" value="${esc(l.nom)}" placeholder="Libellé" aria-label="Libellé"></div>`;arm=`<div class="box"><input data-f="bras" inputmode="decimal" value="${esc(l.bras)}" placeholder="bras" aria-label="Bras de levier"><em>m</em></div>`}
   else{nm=l.type==='carb'?`<div class="nm">Carburant total<small id="carbinfo"></small></div>`:`<div class="nm">${t.nom}</div>`;arm=l.type==='carb'?`<div class="arm num" id="carbarm">—</div>`:`<div class="arm num">${fr(t.bras,2)} m</div>`}
   const del=CREW.includes(l.type)?'<span></span>':`<button class="x" data-del aria-label="Supprimer">×</button>`;
   return `<div class="ld" data-id="${l.id}">${nm}<div class="box"><input data-f="kg" inputmode="decimal" value="${esc(l.kg)}" aria-label="Masse"><em>kg</em></div>${arm}${del}</div>`;
@@ -1750,73 +1688,23 @@ function bindRows(box){
     const d=row.querySelector('[data-del]');if(d)d.addEventListener('click',()=>{st.lines=st.lines.filter(x=>x!==l);save();renderLines();calc()});
   });
 }
-function renderItems(){
-  const box=$('#items');
-  if(!st.items.length){box.innerHTML='<div class="none">Aucun équipement ajouté.</div>';return}
-  box.innerHTML=st.items.map(it=>{const c=catItem(it.nom);if(c){it.kg=c.kg;it.bras=c.bras;it.cat=c.cat}
-    const tot=it.kg*it.qty*(it.sign||1);
-    return `<div class="it" data-id="${it.id}"><div class="nm">${esc(it.nom)}<small>${esc(it.cat||'')} · ${fr(it.kg,1)} kg · bras ${fr(it.bras,2)} m${c?'':' · retiré du catalogue'}</small>
-      <div class="sg"><button type="button" data-sg="1" aria-pressed="${(it.sign||1)>0}">Ajouté</button><button type="button" data-sg="-1" aria-pressed="${(it.sign||1)<0}">Déposé</button></div></div>
-      <div class="qty"><button type="button" data-q="-1" aria-label="Moins">−</button><span class="num">${it.qty}</span><button type="button" data-q="1" aria-label="Plus">+</button></div>
-      <div class="kgv num">${tot>0?'+':''}${fr(tot,1)}<small>kg</small></div><button class="x" data-del aria-label="Retirer">×</button></div>`}).join('');
-  box.querySelectorAll('.it').forEach(row=>{const it=st.items.find(x=>x.id===row.dataset.id);
-    row.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>{it.qty=Math.max(1,it.qty+Number(b.dataset.q));save();renderItems();calc()}));
-    row.querySelectorAll('[data-sg]').forEach(b=>b.addEventListener('click',()=>{it.sign=Number(b.dataset.sg);save();renderItems();calc()}));
-    row.querySelector('[data-del]').addEventListener('click',()=>{st.items=st.items.filter(x=>x!==it);save();renderItems();calc()});
-  });
-}
 function renderLines(){
   renderVide();const a=curAc();
   const crew=CREW.map(t=>st.lines.find(l=>l.type===t)).filter(Boolean);
   $('#lines-crew').innerHTML=crew.map(l=>lineRow(l,a)).join('');bindRows($('#lines-crew'));
-  const fret=st.lines.filter(l=>l.type!=='vide'&&!CREW.includes(l.type));
-  $('#lines-fret').innerHTML=fret.length?fret.map(l=>lineRow(l,a)).join(''):'<div class="none">Aucun fret ni passager.</div>';bindRows($('#lines-fret'));
-  renderItems();
+  const fret=st.lines.filter(l=>l.type!=='vide'&&l.type!=='elingue'&&!CREW.includes(l.type));
+  $('#lines-fret').innerHTML=fret.length?fret.map(l=>lineRow(l,a)).join(''):'<div class="none">Aucun ajout. « + Ajouter » : libellé, masse et bras de levier.</div>';bindRows($('#lines-fret'));
+  // charge à l'élingue (SUP.15) : case à cocher, puis la masse de la charge (bras 4,86 m)
+  const el=st.lines.find(l=>l.type==='elingue');
+  $('#ext-perf').innerHTML=caseOpt(!!el,'Charge à l’élingue','SUP.15','Bras 4,86 m · masse totale jusqu’à 9350 kg · charge ≤ 3000 kg')+(el?`<div id="lines-ext">${lineRow(el,a)}</div>`:'');
+  if(el)bindRows($('#lines-ext'));
+  $('#ext-perf input[type=checkbox]').addEventListener('change',e=>{
+    if(e.target.checked)st.lines.push({id:uid(),type:'elingue',kg:''});else st.lines=st.lines.filter(l=>l.type!=='elingue');
+    save();renderLines();calc();if(e.target.checked){const i=$('#lines-ext input[data-f="kg"]');if(i)i.focus()}});
 }
-// ---- feuille fret / passagers
-$('#openFret').addEventListener('click',()=>{
-  $('#fretgrid').innerHTML=FRET.map((f,i)=>`<button type="button" class="ct" data-i="${i}"><b>${f[1]}</b><span>${f[2]}</span></button>`).join('');
-  $('#fretgrid').querySelectorAll('.ct').forEach(b=>b.addEventListener('click',()=>{const f=FRET[b.dataset.i];
-    st.lines.push(Object.assign({id:uid(),type:f[0],kg:'',nom:'',bras:''},f[3]||{}));save();$('#fret').close();renderLines();calc();
-    const rows=document.querySelectorAll('#lines-fret .ld');const last=rows[rows.length-1];const i=last&&last.querySelector('input[data-f="kg"]');if(i)i.focus()}));
-  $('#fret').showModal();
-});
-$('#closefret').addEventListener('click',()=>$('#fret').close());
-// ---- catalogue équipements
-let eqCat='Tous',eqQ='';
-function renderCatalog(){
-  const all=catalog();const cats=['Tous',...new Set(all.map(e=>e.cat))];
-  if(!cats.includes(eqCat))eqCat='Tous';
-  $('#eqcats').innerHTML=cats.map(c=>`<button type="button" class="tg" data-c="${esc(c)}" aria-pressed="${c===eqCat}">${esc(c)}</button>`).join('')+(cats.includes('Lots de bord')?'':'<span class="tg ghostc">Lots de bord : à ajouter dans equipements.csv</span>');
-  $('#eqcats').querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{eqCat=b.dataset.c;renderCatalog()}));
-  const q=eqQ.toLowerCase();
-  const list=all.filter(e=>(eqCat==='Tous'||e.cat===eqCat)&&(!q||e.nom.toLowerCase().includes(q)));
-  $('#eqgrid').innerHTML=list.length?list.map(e=>{const it=st.items.find(x=>x.nom===e.nom);return `<button type="button" class="ct${it?' on':''}" data-n="${esc(e.nom)}"><b>${esc(e.nom)}</b><span>${fr(e.kg,1)} kg · ${fr(e.bras,2)} m${e.src&&e.src!=='PMV 6.2'?' · escadrille':''}</span>${it?`<i>✓${it.qty>1?' ×'+it.qty:''}</i>`:''}</button>`}).join(''):'<div class="none">Aucun équipement.</div>';
-  $('#eqgrid').querySelectorAll('.ct').forEach(b=>b.addEventListener('click',()=>{const n=b.dataset.n;const i=st.items.findIndex(x=>x.nom===n);
-    if(i>=0)st.items.splice(i,1);else{const e=catItem(n);st.items.push({id:uid(),nom:n,qty:1,sign:1,kg:e.kg,bras:e.bras,cat:e.cat})}
-    save();renderCatalog();renderItems();calc()}));
-}
-$('#openEquip').addEventListener('click',()=>{eqQ='';$('#eqsearch').value='';renderCatalog();$('#equip').showModal();loadRemoteEquip()});
-$('#eqsearch').addEventListener('input',e=>{eqQ=e.target.value;renderCatalog()});
-$('#closeequip').addEventListener('click',()=>$('#equip').close());
-// ---- equipements.csv (GitHub)
-function parseEquipCSV(text){
-  const lines=text.replace(/^﻿/,'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
-  if(!lines.length)return [];
-  const sep=lines[0].includes(';')?';':(lines[0].includes('\t')?'\t':',');
-  const head=lines[0].split(sep).map(h=>h.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''));
-  const col=n=>head.findIndex(h=>h.startsWith(n));
-  const iN=col('nom'),iC=col('cat'),iM=col('masse'),iB=col('bras'),iMo=col('moment');
-  if(iN<0||iM<0||(iB<0&&iMo<0))throw new Error('colonnes nom / masse_kg / bras_m introuvables');
-  const n=v=>Number(String(v||'').replace(',','.').replace(/\s/g,''));
-  return lines.slice(1).map(l=>{const c=l.split(sep).map(v=>v.trim());const kg=n(c[iM]);const bras=iB>=0&&c[iB]!==''?n(c[iB]):n(c[iMo])/kg;
-    return {nom:c[iN],cat:(iC>=0&&c[iC])||'Lots de bord',kg,bras,src:'escadrille'}}).filter(e=>e.nom&&isFinite(e.kg)&&isFinite(e.bras));
-}
-function loadRemoteEquip(){
-  if(!/^https?:/.test(location.protocol))return;
-  fetch('equipements.csv',{cache:'no-store'}).then(r=>r.ok?r.text():Promise.reject()).then(t=>{st.equipRemote=parseEquipCSV(t);save();if($('#equip').open)renderCatalog();renderItems();calc()}).catch(()=>{});
-}
-
+// ajout libre : libellé, masse, bras de levier
+$('#addLibre').addEventListener('click',()=>{st.lines.push({id:uid(),type:'libre',nom:'',kg:'',bras:''});save();renderLines();calc();
+  const rows=document.querySelectorAll('#lines-fret .ld');const last=rows[rows.length-1];const i=last&&last.querySelector('input[data-f="nom"]');if(i)i.focus()});
 // ---------------- optionnels ----------------
 function renderOpts(){
   const perf=Options.OPTIONS;
@@ -1915,7 +1803,7 @@ function calc(){
     if(M>9350)common.push(['Masse totale avec charge externe supérieure à la masse maximale absolue de 9350 kg (SUP.15 §2.2).','ko']);
     if(EXT.M>9000)common.push(['Masse de l’appareil sans la charge externe supérieure à 9000 kg (SUP.15 §2.2, nota).','ko']);
     if(EXT.kg>3000)common.push(['Charge à l’élingue supérieure à la charge maximale autorisée de 3000 kg (SUP.15 §2.1).','ko']);
-    common.push(['Charge externe '+fr(EXT.kg)+' kg : vitesse maxi '+(M>8600?'100':(EXT.kg>2000?'110':'125'))+' kt avec une charge compacte (moins si volumineuse), inclinaison maxi 25° (SUP.15 §2.3 et 2.4). Masse max au décollage et à l’atterrissage = masse HES (SUP.15 fig 2). Centrage contrôlé sur l’appareil sans la charge ('+fr(EXT.M)+' kg · '+fr(EXT.x,3)+' m, domaine 2.2 fig 1) et sur l’ensemble avec la charge à 4,86 m ('+fr(C.x,3)+' m, entre 4,55 et 4,90 m).','in']);
+    common.push(['Charge externe '+fr(EXT.kg)+' kg : vitesse maxi '+(M>8600?'100':(EXT.kg>2000?'110':'125'))+' kt avec une charge compacte (moins si volumineuse), inclinaison maxi 25° (SUP.15 §2.3 et 2.4). Masse max au décollage et à l’atterrissage = masse HES (SUP.15 fig 2). Centrage contrôlé sur l’appareil sans la charge ('+fr(EXT.M)+' kg · '+fr(EXT.x,3)+' m, domaine 2.2 fig 1) et sur l’ensemble avec la charge à 4,86 m ('+fr(C.x,3)+' m, domaine prolongé à 4,55 – 4,90 m au-delà de 9000 kg).','in']);
   }else if(M>9000)common.push(['Masse totale supérieure à la masse maximale de 9000 kg (2.2).','ko']);
   if(M<4500)common.push(['Masse totale inférieure à la masse minimale en vol de 4500 kg (2.2).','ko']);
   if(!C.ok&&isFinite(C.x))common.push(['Centrage au décollage hors domaine (2.2 fig 1).','ko']);
@@ -2066,7 +1954,7 @@ function calc(){
 // ---------------- mission ----------------
 function missionCalc({T,Zp,qnh,M,C,PEN,common,R,horsTile}){
   const mi=st.mis,dist=num(mi.dist),gs=num(mi.gs),conso=num(st.conso),res=isFinite(num(mi.res))?num(mi.res):0;
-  const alt2=num(mi.alt),T2=num(mi.temp),qnh2=isFinite(num(mi.qnh))?num(mi.qnh):qnh,bras=isFinite(num(mi.bras))?num(mi.bras):4.70;
+  const alt2=num(mi.alt),T2=num(mi.temp),qnh2=isFinite(num(mi.qnh))?num(mi.qnh):qnh,bras=mi.elingue?4.86:(isFinite(num(mi.bras))?num(mi.bras):4.70);
   const miss=[];
   if(!(dist>=0))miss.push('distance du trajet');if(!(gs>0))miss.push('vitesse sol');if(!(conso>0))miss.push('consommation horaire (carte Conditions)');
   if(!isFinite(alt2))miss.push('altitude de la zone de poser');if(!isFinite(T2))miss.push('température de la zone de poser');
@@ -2076,7 +1964,7 @@ function missionCalc({T,Zp,qnh,M,C,PEN,common,R,horsTile}){
   const Zp2=Carton.zpFromQnh(alt2,qnh2);
   const pen=PEN.normal;
   // charge à l'élingue (bras 4,86 m) : HES avec charge externe SUP.15 fig 2, 9350 kg maxi, charge ≤ 3000 kg
-  const ext=Math.abs(bras-4.86)<1e-6,FIGM=ext?'sup15':'fig9',MMX=ext?Perf.MMAX_EXT:Perf.MMAX;
+  const ext=!!mi.elingue,FIGM=ext?'sup15':'fig9',MMX=ext?Perf.MMAX_EXT:Perf.MMAX;
   const hes=(TT,ZZ)=>{const s=Perf.masseStatio(FIGM,TT+pen.dThover,ZZ);if(s.hors)return {hors:s.hors,Th:TT+pen.dThover};
     const m=Math.min(s.brut*pen.fHover,MMX);return {brut:s.brut,sup:s.sup&&s.brut*pen.fHover<MMX,masse:floor10(m),lim9:s.brut*pen.fHover>=MMX,Th:TT+pen.dThover}};
   const hd=hes(T,Zp),ha=hes(T2,Zp2);
@@ -2094,8 +1982,8 @@ function missionCalc({T,Zp,qnh,M,C,PEN,common,R,horsTile}){
   const ail=!!st.opts.sponsons,Pk=P!==null?Math.max(0,floor10(P)):0;
   const mom0=C.Mom+Pk*bras,M1=M+Pk,x1=mom0/M1;
   const momA=C.Mom-CG.momentCarb(F0,ail,[])+CG.momentCarb(Math.max(0,F1),ail,[])+Pk*bras,MA=Ma0+Pk,xA=momA/MA;
-  // avec charge externe : appareil sans la charge dans le domaine, ensemble ≤ 9350 kg entre 4,55 et 4,90 m
-  const okExt=(Mt,xt,Ma,xa)=>CG.dansDomaine(Ma,xa)&&Mt<=9350&&xt>=CG.limites(9000).av-1e-9&&xt<=4.90+1e-9;
+  // avec charge externe : appareil sans la charge dans le domaine, ensemble ≤ 9350 kg dans le domaine (prolongé à 4,55 – 4,90 m au-delà de 9000 kg)
+  const okExt=(Mt,xt,Ma,xa)=>CG.dansDomaine(Ma,xa)&&Mt<=9350&&xt>=CG.limites(Math.min(Mt,9000)).av-1e-9&&xt<=4.90+1e-9;
   const okD=ext&&Pk>0?okExt(M1,x1,M,C.x):CG.dansDomaine(M1,x1),okA=ext&&Pk>0?okExt(MA,xA,Ma0,(momA-Pk*bras)/Ma0):CG.dansDomaine(MA,xA);
   if(Pk>0&&!okD)al.push(['Centrage au décollage avec la charge hors domaine ('+fr(x1,3)+' m) : changer la position de la charge.','ko']);
   if(Pk>0&&!okA)al.push(['Centrage à l’arrivée avec la charge hors domaine ('+fr(xA,3)+' m).','ko']);
@@ -2238,7 +2126,7 @@ function openChart(k){
 $('#closechart').addEventListener('click',()=>$('#chart').close());
 $('#chart').addEventListener('click',e=>{if(e.target===$('#chart'))$('#chart').close()});
 
-renderVide();renderLines();renderOpts();calc();loadRemoteEquip();
+renderVide();renderLines();renderOpts();calc();
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>
